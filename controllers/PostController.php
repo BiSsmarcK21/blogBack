@@ -3,11 +3,12 @@
 namespace app\controllers;
 
 use app\models\Post;
+use common\services\PostService;
 use Throwable;
 use Yii;
 use yii\db\Exception;
 use yii\db\StaleObjectException;
-use yii\web\BadRequestHttpException;
+use yii\web\UploadedFile;
 
 class PostController extends \yii\web\Controller
 {
@@ -21,7 +22,7 @@ class PostController extends \yii\web\Controller
     /**
      * @throws Exception
      */
-    public function actionCreate(): \yii\web\Response
+    public function actionCreate1(): \yii\web\Response
     {
         $post = new Post();
         $post->load(Yii::$app->request->post(), '');
@@ -29,6 +30,16 @@ class PostController extends \yii\web\Controller
             return $this->asJson(['status' => 'success']);
         }
         return $this->asJson(['status' => 'error', 'errors' => $post->getErrors()]);
+    }
+
+    public function actionCreate(): \yii\web\Response
+    {
+        $postData =Yii::$app->request->post();
+        $files = UploadedFile::getInstancesByName('files');
+
+        $service = new PostService();
+
+        return $this->asJson($service->createPost($postData, $files));
     }
 
     /**
@@ -50,8 +61,6 @@ class PostController extends \yii\web\Controller
      */
     public function actionDelete(): \yii\web\Response
     {
-/*        var_dump(Yii::$app->request->post('id'));
-        die;*/
         $post = Post::findOne(Yii::$app->request->post('id'));
         if ($post->delete()) {
             return $this->asJson(['status' => 'success']);

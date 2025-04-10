@@ -3,6 +3,7 @@
 namespace app\models;
 
 use Yii;
+use yii\base\InvalidConfigException;
 
 /**
  * This is the model class for table "post".
@@ -18,7 +19,7 @@ class Post extends \yii\db\ActiveRecord
     /**
      * {@inheritdoc}
      */
-    public static function tableName()
+    public static function tableName(): string
     {
         return 'post';
     }
@@ -26,7 +27,7 @@ class Post extends \yii\db\ActiveRecord
     /**
      * {@inheritdoc}
      */
-    public function rules()
+    public function rules(): array
     {
         return [
             [['title', 'content'], 'required'],
@@ -38,7 +39,7 @@ class Post extends \yii\db\ActiveRecord
     /**
      * {@inheritdoc}
      */
-    public function attributeLabels()
+    public function attributeLabels(): array
     {
         return [
             'id' => 'ID',
@@ -47,4 +48,12 @@ class Post extends \yii\db\ActiveRecord
         ];
     }
 
+    /**
+     * @throws InvalidConfigException
+     */
+    public function getImages(): \yii\db\ActiveQuery
+    {
+        return $this->hasMany(Image::class, ['id' => 'image_id'])
+            ->viaTable('post_images', ['product_id' => 'id']);
+    }
 }

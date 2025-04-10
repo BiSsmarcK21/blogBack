@@ -132,6 +132,7 @@ class PostService
         }
     }
 
+    //TODO Нужно удалять изображения, которые связаны с жанным постом.
     public function deletePost(int $id): array
     {
         try {
